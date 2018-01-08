@@ -13,6 +13,8 @@
 
 #include <iostream> //std::cerr
 
+#define BLOCK_WIDTH 64
+
 void initData(float* M, int nRows){ //Remeber: matrix square
 
 	for (int i=0; i<nRows; i++){
@@ -102,12 +104,12 @@ void matrixAdd(float* A, float *B, float *C, int nRows){
 
 	//Kernel launch code
 	//assume block of 64 threads
-	matrixAddKernel <<< ceil((double)(nRows*nRows)/64), 64>>>(d_A, d_B, d_C, nRows);
+	matrixAddKernel <<< ceil((double)(nRows*nRows)/BLOCK_WIDTH), BLOCK_WIDTH>>>(d_A, d_B, d_C, nRows);
 
 	//Two other possible kernel functions
 
-	//matrixPerRowsAddKernel<<< ceil((double)nRows/64) ,64>>>(d_A, d_B, d_C, nRows);
-	//matrixPerColumnsAddKernel<<< ceil((double)nRows/64) ,64>>>(d_A, d_B, d_C, nRows);
+	//matrixPerRowsAddKernel<<< ceil((double)nRows/BLOCK_WIDTH) ,BLOCK_WIDTH>>>(d_A, d_B, d_C, nRows);
+	//matrixPerColumnsAddKernel<<< ceil((double)nRows/BLOCK_WIDTH) ,BLOCK_WIDTH>>>(d_A, d_B, d_C, nRows);
 
 	//Copy A from the device memory
 	CUDA_CHECK_RETURN(cudaMemcpy(A, d_A, size, cudaMemcpyDeviceToHost));
